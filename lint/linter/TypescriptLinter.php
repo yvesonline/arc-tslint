@@ -19,6 +19,7 @@
 final class TypescriptLinter extends ArcanistExternalLinter {
 
   private $project = null;
+  private $typecheck = false;
 
   public function getInfoName() {
     return 'tslint';
@@ -77,6 +78,9 @@ final class TypescriptLinter extends ArcanistExternalLinter {
     if ($this->project) {
       array_push($flags, '--project', $this->project);
     }
+    if ($this->typecheck) {
+      array_push($flags, '--type-check');
+    }
     return $flags;
   }
 
@@ -87,6 +91,11 @@ final class TypescriptLinter extends ArcanistExternalLinter {
         'help' => pht(
           'The path to your tsconfig.json file. Will be provided as --project <path> to tslint.'),
       ),
+      'tslint.typecheck' => array(
+        'type' => 'optional bool',
+        'help' => pht(
+          'Whether or not the --type-check flag will be provided to tslint. Only use this in combination with tslint.project.'),
+      ),
     );
     return $options + parent::getLinterConfigurationOptions();
   }
@@ -95,6 +104,13 @@ final class TypescriptLinter extends ArcanistExternalLinter {
     switch ($key) {
       case 'tslint.project':
         $this->project = $value;
+        return;
+      case 'tslint.typecheck':
+        if (is_bool($value)) {
+          $this->typecheck = true;
+        } else {
+          $this->typecheck = false;
+        }
         return;
       default:
         parent::setLinterConfigurationValue($key, $value);
