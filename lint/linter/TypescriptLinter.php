@@ -77,6 +77,8 @@ final class TypescriptLinter extends ArcanistExternalLinter {
     );
     if ($this->project) {
       array_push($flags, '--project', $this->project);
+    } else {
+      array_push($flags, '--project', $this->getProjectRoot());
     }
     if ($this->typecheck) {
       array_push($flags, '--type-check');
